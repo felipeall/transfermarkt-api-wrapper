@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.DEBUG)
 @dataclass
 class TransfermarktAPI:
     api_root: str = "https://transfermarkt-api.vercel.app"
-    retry_total: int = 3
-    retry_backoff: int = 1
+    retry_total: int = 5
+    retry_backoff: int = 2
     retry_codes: list[int] = field(default_factory=lambda: [500, 501, 502, 503, 504])
 
     def __post_init__(self):

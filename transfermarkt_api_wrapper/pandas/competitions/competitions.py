@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 import pandas as pd
@@ -10,7 +10,18 @@ from transfermarkt_api_wrapper.competitions.competitions import (
 
 @dataclass
 class TransfermarktCompetitions:
-    transfermarkt = TransfermarktCompetitions()
+    api_root: str = "https://transfermarkt-api.vercel.app"
+    retry_total: int = 5
+    retry_backoff: int = 2
+    retry_codes: list[int] = field(default_factory=lambda: [500, 501, 502, 503, 504])
+
+    def __post_init__(self):
+        self.transfermarkt = TransfermarktCompetitions(
+            api_root=self.api_root,
+            retry_total=self.retry_total,
+            retry_backoff=self.retry_backoff,
+            retry_codes=self.retry_codes,
+        )
 
     def get_clubs(self, competition_id: str, season_id: Optional[str] = None) -> pd.DataFrame:
         response = self.transfermarkt.get_clubs(competition_id=competition_id, season_id=season_id)

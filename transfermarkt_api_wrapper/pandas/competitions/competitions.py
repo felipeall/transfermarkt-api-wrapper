@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 import pandas as pd
@@ -9,22 +9,9 @@ from transfermarkt_api_wrapper.competitions.competitions import (
 
 
 @dataclass
-class TransfermarktCompetitions:
-    api_root: str = "https://transfermarkt-api.vercel.app"
-    retry_total: int = 5
-    retry_backoff: int = 2
-    retry_codes: list[int] = field(default_factory=lambda: [500, 501, 502, 503, 504])
-
-    def __post_init__(self):
-        self.transfermarkt = TransfermarktCompetitions(
-            api_root=self.api_root,
-            retry_total=self.retry_total,
-            retry_backoff=self.retry_backoff,
-            retry_codes=self.retry_codes,
-        )
-
-    def get_clubs(self, competition_id: str, season_id: Optional[str] = None) -> pd.DataFrame:
-        response = self.transfermarkt.get_clubs(competition_id=competition_id, season_id=season_id)
+class TransfermarktCompetitions(TransfermarktCompetitions):
+    def get_clubs_df(self, competition_id: str, season_id: Optional[str] = None) -> pd.DataFrame:
+        response = self.get_clubs(competition_id=competition_id, season_id=season_id)
 
         return (
             pd.DataFrame(response.get("clubs"))
@@ -32,14 +19,14 @@ class TransfermarktCompetitions:
             .assign(season_id=response.get("seasonID"))
         )
 
-    def get_players(self, competition_id: str, season_id: Optional[str] = None) -> pd.DataFrame:
-        clubs: list[dict] = self.transfermarkt.get_players(competition_id=competition_id, season_id=season_id)
+    def get_players_df(self, competition_id: str, season_id: Optional[str] = None) -> pd.DataFrame:
+        clubs: list[dict] = self.get_players(competition_id=competition_id, season_id=season_id)
         players: list = [y for x in clubs for y in x.get("players")]
 
         return pd.DataFrame(players)
 
-    def get_players_market_value(self, competition_id: str, season_id: Optional[str] = None) -> pd.DataFrame:
-        players: list = self.transfermarkt.get_players_market_value(competition_id=competition_id, season_id=season_id)
+    def get_players_market_value_df(self, competition_id: str, season_id: Optional[str] = None) -> pd.DataFrame:
+        players: list = self.get_players_market_value(competition_id=competition_id, season_id=season_id)
 
         players_market_values: list = []
         for player in players:

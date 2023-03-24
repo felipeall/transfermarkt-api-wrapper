@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 import pandas as pd
 
@@ -7,8 +8,11 @@ from transfermarkt_api_wrapper.players.players import TransfermarktPlayers
 
 @dataclass
 class TransfermarktPlayers(TransfermarktPlayers):
-    def get_market_value_df(self, player_id: str) -> pd.DataFrame:
+    def get_market_value_df(self, player_id: str) -> Optional[pd.DataFrame]:
         response = self.get_market_value(player_id=player_id)
+
+        if not response.get("marketValueHistory"):
+            return None
 
         return (
             pd.DataFrame(response.get("marketValueHistory"))

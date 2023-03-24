@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "transfermarkt-api-wrapper"
-version = "0.1.5"
+version = "0.1.6"
 description = "Lightweight wrapper for Transfermarkt API"
 authors = ["Felipe Allegretti <felipe@allegretti.me>"]
 license = "MIT"

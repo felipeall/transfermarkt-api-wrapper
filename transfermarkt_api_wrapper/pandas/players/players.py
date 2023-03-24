@@ -12,6 +12,11 @@ class TransfermarktPlayers(TransfermarktPlayers):
 
         return (
             pd.DataFrame(response.get("marketValueHistory"))
-            .assign(date=lambda x: pd.to_datetime(x.date).dt.date)
             .assign(player_id=response.get("id"))
+            .assign(date=lambda x: pd.to_datetime(x.date).dt.date)
+            .assign(
+                value=lambda x: x["value"].replace(
+                    {"€": "", "Th.": "000", "\.": "", "m": "0000", "k": "000"}, regex=True
+                )
+            )
         )
